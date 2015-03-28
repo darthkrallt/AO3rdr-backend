@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-import uuid
 
 """
    Userlib.generator
         Generate new user that does not already exist in the DB.
 """
+
+import uuid
+
 class Generator(object):
     def __init__(self):
         # connect to DB

@@ -7,7 +7,7 @@ from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 
 
-class dbsender(object):
+class sender(object):
     def __init__(self):
         aws_access_key_id = os.environ['S3_KEY']  # I AM OPS U NO GET MY KEYS
         aws_secret_access_key = os.environ['S3_SECRET']  # DIS IS MY JOB
