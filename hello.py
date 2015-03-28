@@ -1,12 +1,18 @@
 import os
-from flask import Flask, json, jsonify, abort
+from flask import Flask, json, jsonify, abort, request, send_from_directory
 from userlib import generator
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
-@app.route('/')
-def hello():
-    return 'Hello World!'
+@app.route('/static/<path:path>')
+def static_page(path):
+    return send_from_directory('static', path)
+
+
+@app.route('/', methods=['GET'])
+def redirect_to_index():
+    return send_from_directory('static', 'index.html')
+
 
 @app.route('/api/v1.0/user/<string:user_id>', methods=['GET'])
 def user_exists(user_id):
