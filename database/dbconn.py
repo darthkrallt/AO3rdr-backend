@@ -7,6 +7,7 @@ from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 
 from flask import _app_ctx_stack
+import time
 
 
 class DBconn(object):
@@ -21,19 +22,30 @@ class DBconn(object):
         self.immutable_fields = ['work_id', 'user_id']
 
     def get_user(self, user_id):
-        res = self.works_table.query_2(user_id__eq='testuser')
+        res = self.works_table.query_2(user_id__eq=user_id)
         out = []
         for entry in res:
             out.append(entry._data)
         return out
 
-    def update_work(user_id, work_id, data):
+    def add_user(self, user_id):
+        """ Adding a user adds a special "work" which is used to store a user's
+            settings.
+        """
+        return self.works_table.put_item(data={
+            'user_id': user_id,
+            'work_id': 'settings',
+            'created': time.time()
+        })
+
+    def update_work(self, user_id, work_id, data):
         item = self.works_table.get_item(user_id=user_id, work_id=work_id)
         # update the item
-        for key, value in data:
+        for key, value in data.iteritems():
             if key not in self.immutable_fields:
                 item[key] = value
-        item.put()
+        item['updated'] = time.time()
+        item.partial_save()
 
     def close(self):
         self._conn.close()

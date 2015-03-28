@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
 """
-    database.standardizer
+    merger.standardizer
         Take the data from the database.sender and standardize its format.
 """
+import merger.standard
+
+
+class Standardizer(merger.standard.Standardizer):
+    def __init__(self):
+        super(Standardizer, self).__init__()
+        self.exclude = ['created']
