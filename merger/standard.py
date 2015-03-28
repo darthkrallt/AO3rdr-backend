@@ -46,6 +46,38 @@ class StandardObject(object):
     def key_to_ts(self, key):
         return '{0}{1}'.format(key,  self._ts_str)
 
+    def merge(self, remote_in):
+        out = StandardObject()
+        for key in set(self.keys() + remote_in.keys()):
+            db_ts = self.get_ts(key)
+            ul_ts = remote_in.get_ts(key)
+            if db_ts > ul_ts:
+                data = self[key]
+            else:
+                data = remote_in[key]
+            out.set_item(key, data[key], data['timestamp'])
+        return out
+
+    def diff(self, remote_in):
+        out = StandardObject()
+        for key in set(self.keys() + remote_in.keys()):
+            db_ts = self.get_ts(key)
+            ul_ts = remote_in.get_ts(key)
+            if db_ts > ul_ts:
+                data = self[key]
+                data_old = remote_in[key]
+            else:
+                data = remote_in[key]
+                data_old = self[key]
+            if data != data_old:
+                out.set_item(key, data[key], data['timestamp'])
+        return out
+
+    def format(self):
+        out = self._data.copy()
+        out.update(self._timestamps)
+        return out
+
 
 class Standardizer(object):
     def __init__(self):
