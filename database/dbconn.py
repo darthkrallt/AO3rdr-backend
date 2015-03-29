@@ -5,6 +5,7 @@ from boto.dynamodb2.fields import GlobalAllIndex, HashKey, RangeKey
 from boto.dynamodb2.items import Item
 from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
+from boto.dynamodb2.exceptions import ItemNotFound
 
 from flask import _app_ctx_stack
 import time
@@ -46,6 +47,23 @@ class DBconn(object):
                 item[key] = value
         item['updated'] = time.time()
         item.partial_save()
+
+    def batch_update(self, data_list):
+        with self.works_table.batch_write() as batch:
+            for data in data_list:
+                batch.put_item(data=data)
+
+    def get_work(self, user_id, work_id):
+        try:
+            res = self.works_table.get_item(user_id=user_id, work_id=work_id)
+        except ItemNotFound:
+            return {}
+        return res._data
+
+    def get_all_works(self, user_id):
+        res = self.works_table.query_2(user_id__eq=user_id)
+        for entry in res:
+            yield entry._data
 
     def close(self):
         self._conn.close()

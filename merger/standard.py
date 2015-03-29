@@ -21,6 +21,16 @@ class StandardObject(object):
             self.key_to_ts(key), self._default_time)
         return {key: data, 'timestamp': timestamp}
 
+    def __contains__(self, key):
+        if key in self._data:
+            return True
+        return False
+
+    def get(self, key, alt=None):
+        if key in self:
+            return self[key]
+        return alt
+
     def get_ts(self, key):
         ts_key = self.key_to_ts(key)
         if key in self._data.keys():
@@ -65,10 +75,10 @@ class StandardObject(object):
             ul_ts = remote_in.get_ts(key)
             if db_ts > ul_ts:
                 data = self[key]
-                data_old = remote_in[key]
+                data_old = remote_in.get(key)
             else:
                 data = remote_in[key]
-                data_old = self[key]
+                data_old = self.get(key)
             if data != data_old:
                 out.set_item(key, data[key], data['timestamp'])
         return out
@@ -77,6 +87,9 @@ class StandardObject(object):
         out = self._data.copy()
         out.update(self._timestamps)
         return out
+
+    def __str__(self):
+        return str(self.format())
 
 
 class Standardizer(object):
