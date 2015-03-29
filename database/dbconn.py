@@ -7,6 +7,8 @@ from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 from boto.dynamodb2.exceptions import ItemNotFound
 
+from decimal import Decimal
+
 from flask import _app_ctx_stack
 import time
 
@@ -58,15 +60,24 @@ class DBconn(object):
             res = self.works_table.get_item(user_id=user_id, work_id=work_id)
         except ItemNotFound:
             return {}
-        return res._data
+        return self.serialize(res)
 
     def get_all_works(self, user_id):
         res = self.works_table.query_2(user_id__eq=user_id)
         for entry in res:
-            yield entry._data
+            yield self.serialize(entry)
 
     def close(self):
         self._conn.close()
+
+    def serialize(self, item):
+        out = dict(item)
+        for k, v in out.items():
+            if type(v) == set:
+                out[k] = list(v)
+            elif type(v) == Decimal:
+                out[k] = float(v)
+        return out
 
 
 def get_db():

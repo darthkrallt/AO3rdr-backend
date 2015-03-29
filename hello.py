@@ -1,6 +1,9 @@
 import os
 from flask import Flask, json, jsonify, abort, request, send_from_directory, _app_ctx_stack
 from userlib import generator
+import merger.bulkmerge as bulkmerge
+import merger.unitmerge as unitmerge
+from database.dbconn import get_db
 
 app = Flask(__name__, static_url_path='')
 
@@ -46,10 +49,13 @@ def gen_user():
 def get_collection(user_id):
     gen = generator.Generator()
     user = gen.user_exists(user_id)
+    dbc = get_db()
     if not user:
         abort(404)
-    collection = {} # TODO: implement DB standardizer, merging
-    # return jsonify({'collection': collection})
+
+    collection = [_ for _ in dbc.get_all_works(user_id)]
+    return jsonify({'collection': collection})
+
 
 
 @app.route('/api/v1.0/user/<string:user_id>/collection', methods=['POST'])
@@ -59,8 +65,10 @@ def merge_collection(user_id):
     if not user:
         abort(404)
     incomming_data = request.form.get('collection', {})
-    collection = {} # TODO: implement DB standardizer, merging
-    return jsonify({'collection': collection})
+    # TODO: sanatize incomming_data
+    bm = bulkmerge.Merger()
+    diff_db, diff_remote = bm.merge(incomming_data)
+    return jsonify({'diff': diff_db})
 
 
 # NOTE: Don't want this implemented in production- test only!
@@ -68,11 +76,15 @@ def merge_collection(user_id):
 def get_work(user_id):
     gen = generator.Generator()
     user = gen.user_exists(user_id)
+    dbc = get_db()
     if not user:
         abort(404)
     incomming_data = request.form.get('work', {})
+    work_id = incomming_data['work_id']
     # TODO: abort if work not found
-    work = {} # TODO: implement DB standardizer, merging
+    work = dbc.get_work(user_id , work_id) # TODO: implement DB standardizer, merging
+    if not work:
+        abort(404)
     return jsonify({'work': work})
 
 
@@ -83,5 +95,7 @@ def merge_work(user_id):
     if not user:
         abort(404)
     incomming_data = request.form.get('work', {})
-    work = {} # TODO: implement DB standardizer, merging
-    return jsonify({'work': work})
+    # TODO: sanatize incomming_data
+    um = unitmerge.Merger()
+    diff_db, diff_remote = um.merge(incomming_data)
+    return jsonify({'diff': diff_remote})
