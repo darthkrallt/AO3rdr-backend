@@ -36,8 +36,8 @@ class Merger(object):
             rmw = remote_in.get(work_id, StandardObject())
             new_object = dbw.merge(rmw)
 
-            diff_db.append(dbw.diff(new_object))
-            diff_remote.append(rmw.diff(new_object))
+            diff_db.append(dbw.diff(new_object).format())
+            diff_remote.append(rmw.diff(new_object).format())
 
             # If there have been changes to the DB object, we want to save it.
             if dbw.format():
@@ -46,4 +46,5 @@ class Merger(object):
         # UPDATE BULK
         self.db_conn.batch_update(new_objects)
 
+        # TODO: these diffs need their ID's!
         return diff_db, diff_remote

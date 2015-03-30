@@ -13,7 +13,6 @@ class Merger(object):
     def __init__(self):
         self.db_std = dbs.Standardizer()
         self.ul_std = uls.Standardizer()
-        self.db_conn = get_db()
         # NOTE this only fails in dev outside of flask.
         try:
             self.db_conn = get_db()
@@ -25,6 +24,7 @@ class Merger(object):
         db_in = self.db_std.standardize(db_in)
         remote_in = self.ul_std.standardize(remote_in)
         new_object = db_in.merge(remote_in)
+        new_dict = new_object.format()
 
-        self.db_conn.update_work(new_object['user_id'], new_object['work_id'], new_object.format())
-        return db_in.diff(new_object), remote_in.diff(new_object)
+        self.db_conn.update_work(new_dict['user_id'], new_dict['work_id'], new_dict)
+        return db_in.diff(new_object).format(), remote_in.diff(new_object).format()
