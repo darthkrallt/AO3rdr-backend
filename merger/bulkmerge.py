@@ -27,8 +27,8 @@ class Merger(object):
         remote_in = {
             _['work_id']: self.db_std.standardize(_) for _ in remote_in}
 
-        diff_db = []
-        diff_remote = []
+        diff_db = {}
+        diff_remote = {}
         new_objects = []
 
         for work_id in set(db_in.keys() + remote_in.keys()):
@@ -36,8 +36,8 @@ class Merger(object):
             rmw = remote_in.get(work_id, StandardObject())
             new_object = dbw.merge(rmw)
 
-            diff_db.append(dbw.diff(new_object).format())
-            diff_remote.append(rmw.diff(new_object).format())
+            diff_db[work_id] = dbw.diff(new_object).format()
+            diff_remote[work_id] = rmw.diff(new_object).format()
 
             # If there have been changes to the DB object, we want to save it.
             if dbw.format():
