@@ -6,4 +6,5 @@ argparse==1.2.1
 boto==2.36.0
 gunicorn==19.3.0
 itsdangerous==0.24
+jsonschema==2.4.0
 wsgiref==0.1.2

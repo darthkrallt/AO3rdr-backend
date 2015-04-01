@@ -71,13 +71,23 @@ class DBconn(object):
         self._conn.close()
 
     def serialize(self, item):
-        out = dict(item)
-        for k, v in out.items():
-            if type(v) == set:
-                out[k] = list(v)
-            elif type(v) == Decimal:
-                out[k] = float(v)
+        out = serialize(dict(item))
         return out
+
+def serialize(item):
+    if isinstance(item, dict):
+        out = {}
+        for k, v in item.items():
+            out[k] = serialize(v)
+    elif isinstance(item, set) or isinstance(item, list):
+        out = []
+        for i in item:
+            out.append(serialize(i))
+    elif isinstance(item, Decimal):
+        out = float(item)
+    else:
+        out = item
+    return out
 
 
 def get_db():

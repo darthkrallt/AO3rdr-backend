@@ -70,12 +70,24 @@ def merge_collection(user_id):
         user = gen.user_exists(user_id)
         if not user:
             abort(404)
-        import sys
-        print >> sys.stderr, incomming_data
         # TODO: sanatize incomming_data
         bm = bulkmerge.Merger()
-        diff_db, diff_remote = bm.merge(incomming_data['collection'])
-        return jsonify({'diff': diff_db})
+        res = bm.merge(user_id, incomming_data['article_data'])
+
+        to_db = []
+        for k, v in res.whole.iteritems():
+            v['work_id'] = k
+            v['user_id'] = user_id
+            to_db.append(v)
+
+        # If all is well, save to DB
+        try:
+            db_conn = get_db()
+        except:
+            db_conn = DBconn()
+
+        db_conn.batch_update(to_db)
+        return jsonify({'diff': res.remote})
     except Exception as exc:
         return repr(traceback.print_exc())
         abort(400)  #Bad request
@@ -105,8 +117,16 @@ def merge_work(user_id, work_id):
             abort(404)
         # TODO: sanatize incomming_data
         um = unitmerge.Merger()
-        diff_db, diff_remote = um.merge(incomming_data["work"])
-        return jsonify({'diff': diff_remote})
+        res = um.merge(user_id, work_id, incomming_data)
+
+        # If all is well, save to DB
+        try:
+            db_conn = get_db()
+        except:
+            db_conn = DBconn()
+
+        db_conn.update_work(user_id, work_id, res.whole)
+        return jsonify({'diff': res.remote})
     except Exception as exc:
         return repr(traceback.print_exc())
         abort(400)  #Bad request

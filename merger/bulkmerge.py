@@ -7,10 +7,13 @@
 """
 import database.standardizer as dbs
 import userlib.standardizer as uls
+from collections import namedtuple
 from database.dbconn import get_db, DBconn
 from standard import StandardObject
 
 class Merger(object):
+    out = namedtuple('MergeRes', ['db', 'remote', 'whole'])
+
     def __init__(self):
         self.db_std = dbs.Standardizer()
         self.ul_std = uls.Standardizer()
@@ -20,16 +23,21 @@ class Merger(object):
         except:
             self.db_conn = DBconn()
 
-    def merge(self, remote_in):
-        db_in = self.db_conn.get_all_works(remote_in[0]['user_id'])
+    def merge(self, user_id, remote_in):
+        """ Takes in a dict
+            {
+                "workd_id1: {...work dict 1...},
+                "workd_id2: {...work dict 2...},
+            }
+        """
+        db_in = self.db_conn.get_all_works(user_id)
 
         db_in = {_['work_id']: self.db_std.standardize(_) for _ in db_in}
-        remote_in = {
-            _['work_id']: self.db_std.standardize(_) for _ in remote_in}
+        remote_in = {k: self.db_std.standardize(v) for k, v in remote_in.iteritems()}
 
         diff_db = {}
         diff_remote = {}
-        new_objects = []
+        new_objects = {}
 
         for work_id in set(db_in.keys() + remote_in.keys()):
             dbw = db_in.get(work_id, StandardObject())
@@ -40,11 +48,12 @@ class Merger(object):
             diff_remote[work_id] = rmw.diff(new_object).format()
 
             # If there have been changes to the DB object, we want to save it.
-            if dbw.format():
-                new_objects.append(new_object.format())
+            if diff_db[work_id]:
+                new_objects[work_id] = new_object.format()
 
-        # UPDATE BULK
-        self.db_conn.batch_update(new_objects)
-
-        # TODO: these diffs need their ID's!
-        return diff_db, diff_remote
+        out = self.out(
+            db=diff_db,
+            remote=diff_remote,
+            whole=new_objects
+        )
+        return out
