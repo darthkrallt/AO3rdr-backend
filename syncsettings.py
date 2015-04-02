@@ -4,6 +4,7 @@ from userlib import generator
 import merger.bulkmerge as bulkmerge
 import merger.unitmerge as unitmerge
 from database.dbconn import get_db
+from userlib.reciever import validate_prefs, validate_work
 
 import traceback
 
@@ -66,11 +67,12 @@ def merge_collection(user_id):
     if request.headers['Content-Type'] == 'application/json':
         incomming_data = request.json
     try:
+        validate_prefs(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
         if not user:
             abort(404)
-        # TODO: sanatize incomming_data
+
         bm = bulkmerge.Merger()
         res = bm.merge(user_id, incomming_data['article_data'])
 
@@ -111,11 +113,12 @@ def merge_work(user_id, work_id):
     if request.headers['Content-Type'] == 'application/json':
         incomming_data = request.json
     try:
+        validate_work(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
         if not user:
             abort(404)
-        # TODO: sanatize incomming_data
+
         um = unitmerge.Merger()
         res = um.merge(user_id, work_id, incomming_data)
 

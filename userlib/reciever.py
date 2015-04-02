@@ -31,7 +31,7 @@ work_schema = {
                 "total": {"type": "string"},
                 "complete": {"type": "boolean"},
             },
-            "required": ["published", "total", "complete"],
+            "required": ["published", "total"],
         },
     },
 
@@ -60,7 +60,7 @@ prefs_schema = {
         "tags": {
             "type": "array" # No max limit to tags
         },
-        "autofilter": {"type": "bool"}  #? is bool a thing for this?
+        "autofilter": {"type": "boolean"}  #? is bool a thing for this?
     },
     #"required": [], # Nothing is required
 }
@@ -80,11 +80,15 @@ collection_schema = {
         },
         "prefs": prefs_schema,
     },
-    "required": ["user_id", "article_data", "prefs"],
+    #"required": ["user_id", "article_data", "prefs"],
     "additionalItems": False,
-    "minItems": 1,
-    "maxItems": 5,  # Think about this
 }
+
+def validate_prefs(data):
+    return jsonschema.validate(data, collection_schema)
+
+def validate_work(data):
+    return jsonschema.validate(data, work_schema)
 
 # jsonschema.Draft4Validator.check_schema(schema)
 # jsonschema.validate(dict_in, schema)
