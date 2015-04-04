@@ -50,6 +50,11 @@ class DBconn(object):
         item['updated'] = time.time()
         item.partial_save()
 
+    def create_work(self, user_id, work_id, data):
+        data['user_id'] = user_id
+        data['work_id'] =  work_id
+        self.works_table.put_item(data)
+
     def batch_update(self, data_list):
         with self.works_table.batch_write() as batch:
             for data in data_list:

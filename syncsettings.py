@@ -5,9 +5,10 @@ import merger.bulkmerge as bulkmerge
 import merger.unitmerge as unitmerge
 from database.dbconn import get_db
 from userlib.reciever import validate_prefs, validate_work
+from boto.dynamodb2.exceptions import ItemNotFound
 
 import traceback
-
+import sys
 
 app = Flask(__name__, static_url_path='')
 
@@ -64,9 +65,11 @@ def get_collection(user_id):
 
 @app.route('/api/v1.0/user/<string:user_id>/collection', methods=['POST'])
 def merge_collection(user_id):
-    if request.headers['Content-Type'] == 'application/json':
-        incomming_data = request.json
+    # if request.headers['Content-Type'] == 'application/json':
+    #     incomming_data = request.json
     try:
+        incomming_data = request.json
+        print >> sys.stderr, incomming_data
         validate_prefs(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
@@ -110,9 +113,11 @@ def get_work(user_id, work_id):
 @app.route('/api/v1.0/user/<string:user_id>/work/<string:work_id>', methods=['POST'])
 def merge_work(user_id, work_id):
     # NOTE: if created, return 201
-    if request.headers['Content-Type'] == 'application/json':
-        incomming_data = request.json
+    # if request.headers['Content-Type'] == 'application/json':
+    #     incomming_data = request.json
     try:
+        incomming_data = request.json
+        print >> sys.stderr, incomming_data
         validate_work(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
@@ -128,8 +133,14 @@ def merge_work(user_id, work_id):
         except:
             db_conn = DBconn()
 
-        db_conn.update_work(user_id, work_id, res.whole)
-        return jsonify({'diff': res.remote})
+        status_code = 200
+        try:
+            db_conn.update_work(user_id, work_id, res.whole)
+        except ItemNotFound:
+            db_conn.create_work(user_id, work_id, res.whole)
+            status_code = 201
+
+        return jsonify({'diff': res.remote}), status_code
     except Exception as exc:
         return repr(traceback.print_exc())
         abort(400)  #Bad request
