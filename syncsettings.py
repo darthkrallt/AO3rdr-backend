@@ -3,9 +3,8 @@ from flask import Flask, json, jsonify, abort, request, send_from_directory, _ap
 from userlib import generator
 import merger.bulkmerge as bulkmerge
 import merger.unitmerge as unitmerge
-from database.dbconn import get_db
+from database.dbconn import get_db, ItemNotFound
 from userlib.reciever import validate_prefs, validate_work
-from boto.dynamodb2.exceptions import ItemNotFound
 
 import traceback
 import sys
