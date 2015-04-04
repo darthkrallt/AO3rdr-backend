@@ -8,10 +8,10 @@ import database.standardizer as dbs
 import userlib.standardizer as uls
 from collections import namedtuple
 from database.dbconn import get_db, DBconn
-from standard import StandardObject
+from standard import StandardObject, MERGER_RESPONSE
 
 class Merger(object):
-    out = namedtuple('MergeRes', ['db', 'remote', 'whole'])
+
     def __init__(self):
         self.db_std = dbs.Standardizer()
         self.ul_std = uls.Standardizer()
@@ -28,9 +28,17 @@ class Merger(object):
         new_object = db_in.merge(remote_in)
         new_dict = new_object.format()
 
-        out = self.out(
+
+        status_code = 204  # The server has fulfilled the request but does not
+        # need to return an entity-body.
+        if remote_in.diff(new_object).format():
+            status_code = 205 # The server has fulfilled the request and the
+        # user agent SHOULD reset the document view.
+
+        out = MERGER_RESPONSE(
             db=db_in.diff(new_object).format(),
-            remote= remote_in.diff(new_object).format(),
-            whole=new_object.format()
+            remote=remote_in.diff(new_object).format(),
+            whole=new_object.format(),
+            status_code=status_code
         )
         return out

@@ -45,7 +45,7 @@ def user_exists(user_id):
 def gen_user():
     gen = generator.Generator()
     user_id = gen.make_user()
-    return jsonify({'user_id': user_id})
+    return jsonify({'user_id': user_id}), 201
 
 
 # NOTE: Don't want this implemented in production- test only!
@@ -58,7 +58,7 @@ def get_collection(user_id):
         abort(404)
 
     collection = [_ for _ in dbc.get_all_works(user_id)]
-    return jsonify({'collection': collection})
+    return jsonify({'collection': collection}), 200
 
 
 
@@ -91,7 +91,8 @@ def merge_collection(user_id):
             db_conn = DBconn()
 
         db_conn.batch_update(to_db)
-        return jsonify({'diff': res.remote})
+
+        return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
         print >> sys.stderr, repr(traceback.print_exc())
         abort(400)  #Bad request
@@ -107,7 +108,7 @@ def get_work(user_id, work_id):
     work = dbc.get_work(user_id , work_id) # TODO: implement DB standardizer, merging
     if not work:
         abort(204)
-    return jsonify({'work': work})
+    return jsonify({'work': work}), 200
 
 @app.route('/api/v1.0/user/<string:user_id>/work/<string:work_id>', methods=['POST'])
 def merge_work(user_id, work_id):
@@ -132,14 +133,12 @@ def merge_work(user_id, work_id):
         except:
             db_conn = DBconn()
 
-        status_code = 200
         try:
             db_conn.update_work(user_id, work_id, res.whole)
         except ItemNotFound:
             db_conn.create_work(user_id, work_id, res.whole)
-            status_code = 201
 
-        return jsonify({'diff': res.remote}), status_code
+        return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
         print >> sys.stderr, repr(traceback.print_exc())
         abort(400)  #Bad request

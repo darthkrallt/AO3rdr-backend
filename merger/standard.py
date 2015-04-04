@@ -5,6 +5,11 @@
         Standard object
 """
 
+from collections import namedtuple
+
+
+MERGER_RESPONSE = namedtuple('MergeRes', ['db', 'remote', 'whole', 'status_code'])
+
 TS_STR = '__ts'
 
 class StandardObject(object):
