@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask, json, jsonify, abort, request, send_from_directory, _app_ctx_stack
 from userlib import generator
 import merger.bulkmerge as bulkmerge
@@ -9,6 +10,10 @@ from userlib.reciever import validate_prefs, validate_work
 import traceback
 import sys
 
+
+log = logging.getLogger(__name__)
+logging.basicConfig()  # TODO consider file based config
+
 app = Flask(__name__, static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
 
@@ -18,7 +23,7 @@ def close_db_connection(exception):
     """Closes the database again at the end of the request."""
     top = _app_ctx_stack.top
     if hasattr(top, 'db_conn'):
-        print('here')
+        log.debug('here')
         top.db_conn.close()
 
 @app.route('/static/<path:path>')
@@ -69,7 +74,7 @@ def merge_collection(user_id):
     #     incomming_data = request.json
     try:
         incomming_data = request.json
-        print >> sys.stderr, incomming_data
+        log.debug('%r', incomming_data)
         validate_prefs(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
@@ -93,11 +98,11 @@ def merge_collection(user_id):
 
         db_conn.batch_update(to_db)
 
-        print >> sys.stderr, res.status_code,  res.remote
+        log.debug('%r %r', res.status_code,  res.remote)
 
         return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
-        print >> sys.stderr, repr(traceback.print_exc())
+        log.debug('%r', traceback.print_exc())  # TODO use exc_info=True instead
         abort(400)  #Bad request
 
 # NOTE: Don't want this implemented in production- test only!
@@ -120,7 +125,7 @@ def merge_work(user_id, work_id):
     #     incomming_data = request.json
     try:
         incomming_data = request.json
-        print >> sys.stderr, incomming_data
+        log.debug('%r', incomming_data)
         validate_work(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
@@ -143,5 +148,5 @@ def merge_work(user_id, work_id):
 
         return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
-        print >> sys.stderr, repr(traceback.print_exc())
+        log.debug('%r', traceback.print_exc())  # TODO use exc_info=True instead
         abort(400)  #Bad request
