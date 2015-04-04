@@ -28,15 +28,16 @@ class Merger(object):
         new_object = db_in.merge(remote_in)
         new_dict = new_object.format()
 
+        db_diff = db_in.diff(new_object).format()
 
-        status_code = 204  # The server has fulfilled the request but does not
-        # need to return an entity-body.
-        if remote_in.diff(new_object).format():
+        # NOTE: mozilla doesn't seem to support 204 or 205
+        status_code = 200
+        if remote_in.diff(new_object).format() == db_diff:
             status_code = 205 # The server has fulfilled the request and the
         # user agent SHOULD reset the document view.
 
         out = MERGER_RESPONSE(
-            db=db_in.diff(new_object).format(),
+            db=db_diff,
             remote=remote_in.diff(new_object).format(),
             whole=new_object.format(),
             status_code=status_code

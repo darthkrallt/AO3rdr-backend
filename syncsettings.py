@@ -10,6 +10,7 @@ import traceback
 import sys
 
 app = Flask(__name__, static_url_path='')
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
 
 
 @app.teardown_appcontext
@@ -91,6 +92,8 @@ def merge_collection(user_id):
             db_conn = DBconn()
 
         db_conn.batch_update(to_db)
+
+        print >> sys.stderr, res.status_code,  res.remote
 
         return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
