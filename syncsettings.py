@@ -94,7 +94,7 @@ def merge_collection(user_id):
         db_conn.batch_update(to_db)
         return jsonify({'diff': res.remote})
     except Exception as exc:
-        return repr(traceback.print_exc())
+        print >> sys.stderr, repr(traceback.print_exc())
         abort(400)  #Bad request
 
 # NOTE: Don't want this implemented in production- test only!
@@ -142,5 +142,5 @@ def merge_work(user_id, work_id):
 
         return jsonify({'diff': res.remote}), status_code
     except Exception as exc:
-        return repr(traceback.print_exc())
+        print >> sys.stderr, repr(traceback.print_exc())
         abort(400)  #Bad request
