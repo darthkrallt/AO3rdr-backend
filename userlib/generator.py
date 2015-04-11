@@ -18,7 +18,7 @@ class Generator(object):
 
     def make_user(self):
         # TODO: retry on collision
-        user_id = uuid.uuid4().lower()
+        user_id = str(uuid.uuid4()).lower()
         assert not self.user_exists(user_id)
         # TODO: add user ID to db
         return user_id
