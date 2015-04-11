@@ -29,7 +29,7 @@ work_schema = {
             "properties": {
                 "published": {"type": "string"},  #Technically an int, but can be a "?"
                 "total": {"type": "string"},
-                "complete": {"type": "boolean"},
+                "complete": {}, # Not a boolean
             },
             "required": ["published", "total"],
         },
@@ -41,7 +41,7 @@ work_schema = {
         "chapters": {"$ref": "#/definitions/chapters"},
         "title": {"type": "string"},
         "hasupdate": {"type": "boolean"},
-        "updated": {"type": "string"},  # TZ
+        "updated": {"type": "string"},  # unix timestamp
         "crawled": {"type": "string"},  # TZ
         "visit": {"type": "string"},  # TZ
         "author": {"type": "string"},
