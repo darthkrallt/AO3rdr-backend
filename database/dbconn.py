@@ -25,10 +25,11 @@ class DBconn(object):
         self.immutable_fields = ['work_id', 'user_id']
 
     def get_user(self, user_id):
-        res = self.works_table.query_2(user_id__eq=user_id)
+        res = self.works_table.query_2(
+            user_id__eq=user_id, work_id__eq='settings', attributes=['user_id'])
         out = []
         for entry in res:
-            out.append(entry._data)
+            out.append(self.serialize(entry)['user_id'])
         return out
 
     def add_user(self, user_id):
