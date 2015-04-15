@@ -60,7 +60,8 @@ prefs_schema = {
         "tags": {
             "type": "array" # No max limit to tags
         },
-        "autofilter": {"type": "boolean"}  #? is bool a thing for this?
+        "autofilter": {"type": "boolean"},  #? is bool a thing for this?
+        "last_sync": {"type": "number"}
     },
     #"required": [], # Nothing is required
 }
