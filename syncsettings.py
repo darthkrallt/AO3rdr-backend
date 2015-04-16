@@ -5,14 +5,14 @@ from userlib import generator
 import merger.bulkmerge as bulkmerge
 import merger.unitmerge as unitmerge
 from database.dbconn import get_db, ItemNotFound
-from userlib.reciever import validate_prefs, validate_work
+from userlib.reciever import validate_collection, validate_work
 
 import traceback
 import sys
 
 
 log = logging.getLogger(__name__)
-logging.basicConfig()  # TODO consider file based config
+logging.basicConfig(level=logging.INFO)  # TODO consider file based config
 
 app = Flask(__name__, static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
@@ -23,7 +23,7 @@ def close_db_connection(exception):
     """Closes the database again at the end of the request."""
     top = _app_ctx_stack.top
     if hasattr(top, 'db_conn'):
-        log.debug('here')
+        log.info('here')
         top.db_conn.close()
 
 @app.route('/static/<path:path>')
@@ -70,12 +70,12 @@ def get_collection(user_id):
 
 @app.route('/api/v1.0/user/<string:user_id>/collection', methods=['POST'])
 def merge_collection(user_id):
-    # if request.headers['Content-Type'] == 'application/json':
-    #     incomming_data = request.json
+    # if request.headers['Content-Type'] != 'application/json':
+    #     abort(400)
     try:
         incomming_data = request.json
-        log.debug('%r', incomming_data)
-        validate_prefs(incomming_data)
+        log.info('%r', incomming_data)
+        validate_collection(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
         if not user:
@@ -98,11 +98,11 @@ def merge_collection(user_id):
 
         db_conn.batch_update(to_db)
 
-        log.debug('%r %r', res.status_code,  res.remote)
+        log.info('%r %r', res.status_code,  res.remote)
 
         return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
-        log.debug('%r', traceback.print_exc())  # TODO use exc_info=True instead
+        log.error('%r', traceback.print_exc())  # TODO use exc_info=True instead
         abort(400)  #Bad request
 
 # NOTE: Don't want this implemented in production- test only!
@@ -120,12 +120,11 @@ def get_work(user_id, work_id):
 
 @app.route('/api/v1.0/user/<string:user_id>/work/<string:work_id>', methods=['POST'])
 def merge_work(user_id, work_id):
-    # NOTE: if created, return 201
-    # if request.headers['Content-Type'] == 'application/json':
-    #     incomming_data = request.json
+    # if request.headers['Content-Type'] != 'application/json':
+    #     abort(400)
     try:
         incomming_data = request.json
-        log.debug('%r', incomming_data)
+        log.info('%r', incomming_data)
         validate_work(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
@@ -148,5 +147,5 @@ def merge_work(user_id, work_id):
 
         return jsonify({'diff': res.remote}), res.status_code
     except Exception as exc:
-        log.debug('%r', traceback.print_exc())  # TODO use exc_info=True instead
+        log.info('%r', traceback.print_exc())  # TODO use exc_info=True instead
         abort(400)  #Bad request

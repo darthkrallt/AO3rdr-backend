@@ -39,6 +39,7 @@ work_schema = {
 
     "properties": {
         "chapters": {"$ref": "#/definitions/chapters"},
+        "created": {"type": "number"},
         "title": {"type": "string"},
         "hasupdate": {"type": "boolean"},
         "updated": {"type": "string"},  # unix timestamp
@@ -85,7 +86,7 @@ collection_schema = {
     "additionalItems": False,
 }
 
-def validate_prefs(data):
+def validate_collection(data):
     return jsonschema.validate(data, collection_schema)
 
 def validate_work(data):

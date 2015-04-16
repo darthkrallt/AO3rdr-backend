@@ -54,6 +54,8 @@ class DBconn(object):
     def create_work(self, user_id, work_id, data):
         data['user_id'] = user_id
         data['work_id'] =  work_id
+        if 'created' not in data:
+            data['created'] = time.time()
         self.works_table.put_item(data)
 
     def batch_update(self, data_list):
