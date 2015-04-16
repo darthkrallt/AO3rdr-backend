@@ -48,7 +48,7 @@ class DBconn(object):
         for key, value in data.iteritems():
             if key not in self.immutable_fields:
                 item[key] = value
-        item['updated'] = time.time()
+        item['db_updated'] = time.time()
         item.partial_save()
 
     def create_work(self, user_id, work_id, data):
