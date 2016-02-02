@@ -18,6 +18,17 @@ app = Flask(__name__, static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
 
 
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+            'status': 404,
+            'message': 'Not Found: ' + request.url,
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+
+    return resp
+
 @app.teardown_appcontext
 def close_db_connection(exception):
     """Closes the database again at the end of the request."""
@@ -40,7 +51,7 @@ def user_exists(user_id):
     gen = generator.Generator()
     user = gen.user_exists(user_id)
     if not user:
-        abort(404)
+        return not_found()
     return jsonify({'user_id': user})
 
 
@@ -60,7 +71,7 @@ def get_collection(user_id):
     user = gen.user_exists(user_id)
     dbc = get_db()
     if not user:
-        abort(404)
+        return not_found()
 
     collection = [_ for _ in dbc.get_all_works(user_id)]
     return jsonify({'collection': collection}), 200
@@ -78,7 +89,7 @@ def merge_collection(user_id):
         gen = generator.Generator()
         user = gen.user_exists(user_id)
         if not user:
-            abort(404)
+            return not_found()
 
         bm = bulkmerge.Merger()
         res = bm.merge(user_id, incomming_data['article_data'])
@@ -111,10 +122,10 @@ def get_work(user_id, work_id):
     user = gen.user_exists(user_id)
     dbc = get_db()
     if not user:
-        abort(404)
+        return not_found()
     work = dbc.get_work(user_id , work_id) # TODO: implement DB standardizer, merging
     if not work:
-        abort(204)
+        return not_found()
     return jsonify({'work': work}), 200
 
 @app.route('/api/v1.0/user/<string:user_id>/work/<string:work_id>', methods=['POST'])
@@ -124,13 +135,16 @@ def merge_work(user_id, work_id):
     try:
         incomming_data = request.json
         log.info('%r', incomming_data)
+
+        if (not work_id) or (work_id == 'undefined'):
+            return not_found()
+
+
         validate_work(incomming_data)
         gen = generator.Generator()
         user = gen.user_exists(user_id)
         if not user:
-            abort(404)
-        if (not work_id) or (work_id == 'undefined'):
-            abort(404)
+            return not_found()
 
         um = unitmerge.Merger()
         res = um.merge(user_id, work_id, incomming_data)
