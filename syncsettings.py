@@ -23,7 +23,6 @@ def close_db_connection(exception):
     """Closes the database again at the end of the request."""
     top = _app_ctx_stack.top
     if hasattr(top, 'db_conn'):
-        log.info('here')
         top.db_conn.close()
 
 @app.route('/static/<path:path>')

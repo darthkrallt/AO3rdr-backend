@@ -42,4 +42,5 @@ class Merger(object):
             whole=new_object.format(),
             status_code=status_code
         )
+
         return out
