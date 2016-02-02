@@ -129,6 +129,8 @@ def merge_work(user_id, work_id):
         user = gen.user_exists(user_id)
         if not user:
             abort(404)
+        if (not work_id) or (work_id == 'undefined'):
+            abort(404)
 
         um = unitmerge.Merger()
         res = um.merge(user_id, work_id, incomming_data)
