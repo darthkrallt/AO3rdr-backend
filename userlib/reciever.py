@@ -48,7 +48,8 @@ work_schema = {
         "author": {"type": "string"},
         "ao3id": {"type": "string"},  # Technically an int, stored as string
         "rating": {"type": "number"},
-        "deleted": {"type": "boolean"}
+        "deleted": {"type": "boolean"},
+        "fandom": {"type": "string"}
     },
     "required": ["chapters", "title", "ao3id"],
 }
