@@ -21,13 +21,15 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/ao3.css">
+  <link rel="stylesheet" href="css/custom.css">
 
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="icon" type="image/svg" href="../images/icon.svg">
 
   <!-- JS and CSS -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/custom.css" />
 
 </head>
@@ -36,32 +38,189 @@
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="container">
-      <div class="row">
+    <div class="skeleton header">
 
-        <div class="eleven columns" style="margin-top: 5%">
         <img src="images/icon.svg" style="height:64px">
-          <h5>AO3rdr Bookmarker</h5>
+          <h2 class="title">AO3rdr Bookmarker</h2>
           <p>
-            A bookmark manager for reading on Archive of Our Own (archiveofourown.org). Three star rating system, hide works, blackist by tags, set chapter bookmarks, keep track of last visit time, and syn between devices using the cloud.
+            An unoffical bookmark manager for reading on Archive of Our Own (archiveofourown.org). Three star rating system, hide works, blackist by tags, set chapter bookmarks, keep track of last visit time, and sync between devices using the cloud.
           </p>
-          <p>
-            Available <a href="https://addons.mozilla.org/en-us/firefox/addon/ao3rdr/">Firefox <img src="images/firefox.png" style="width:16px" style="padding-left:2px"></a> desktop, <a href="https://addons.mozilla.org/en-us/firefox/addon/ao3rdr/">Firefox mobile beta</a>, and <a href="https://chrome.google.com/webstore/detail/ao3rdr/hbbcholilmaipbhjbcohpleofolpdnjl">Chrome <img src="images/chrome.png" style="width:16px"></a>.
-          </p>
-
-        </div>
-        <div class="twelve columns">
-          <a href="images/preview2.png">
-            <img class="u-max-full-width" src="images/preview2.png">
+        <div class="eleven columns">
+          <a href="https://addons.mozilla.org/en-us/firefox/addon/ao3rdr/">
+             <img src="images/firefox.png" style="width:64px" style="padding-left:2px">
           </a>
+           <a href="https://chrome.google.com/webstore/detail/ao3rdr/hbbcholilmaipbhjbcohpleofolpdnjl">
+             <img src="images/chrome.png" style="width:64px">
+           </a>
         </div>
-        <div class="four columns">
+
+      <div class="row">
+        <div class="eleven columns">
+            <p>
+              Available <a href="https://addons.mozilla.org/en-us/firefox/addon/ao3rdr/">Firefox <img src="images/firefox.png" style="width:16px" style="padding-left:2px"></a> desktop, <a href="https://addons.mozilla.org/en-us/firefox/addon/ao3rdr/">Firefox mobile beta</a>, and <a href="https://chrome.google.com/webstore/detail/ao3rdr/hbbcholilmaipbhjbcohpleofolpdnjl">Chrome <img src="images/chrome.png" style="width:16px"></a>.
+            </p>
+
+          </div>
+      </div>
+    </div>
+    <div class="row">
+
+
+        <!-- example work -->
+<li class="work blurb group shrink" id="work_XXXX" role="article">
+  
+
+  <!--title, author, fandom-->
+  <div class="header module">
+
+    <h4 class="heading">
+      <a href="/works/XXXX">Example Work</a>
+      by
+        
+      <!-- do not cache -->
+      <a href="http://archiveofourown.org/users/MedusaMacabre/pseuds/test%20author" rel="author">Test Author</a>
+
+
+
+      
+      
+    </h4>
+
+    <h5 class="fandoms heading">
+      <span class="landmark">Fandoms:</span>
+      <a href="http://archiveofourown.org/tags/test%20fandom/works" class="tag">Test Fandom</a>
+      &nbsp;
+    </h5>
+
+    <!--required tags-->
+    <ul class="required-tags">
+    <img src="images/ao3icons.png">
+</ul>
+    <p class="datetime">13 Apr 2016</p>
+  </div>
+
+  <!--warnings again, cast, freeform tags-->
+  <h6 class="landmark heading">Tags</h6>
+  <ul class="tags commas">
+    <li class="warnings"><strong><a href="http://archiveofourown.org/tags/Choose%20Not%20To%20Use%20Archive%20Warnings/works" class="tag">Creator Chose Not To Use Archive Warnings</a></strong></li>
+    <li class="relationships"><a href="http://archiveofourown.org/tags/works" class="tag">Person 1/Person 2</a></li>
+    <li class="characters"><a href="http://archiveofourown.org/tags/person%201/works" class="tag">Person 1</a></li> 
+    <li class="characters"><a href="http://archiveofourown.org/tags/person%202/works" class="tag">Person 2</a></li> 
+    <li class="freeforms"><a href="http://archiveofourown.org/tags/I%20Don't%20Even%20Know/works" class="tag">I Don't Even Know</a></li> 
+    <li class="freeforms"><a href="http://archiveofourown.org/tags/I%20made%20myself%20sad%20with%20this/works" class="tag">I made myself sad with this</a></li> 
+    <li class="freeforms last"><a href="http://archiveofourown.org/tags/emotions/works" class="tag">emotions</a></li>
+  </ul>
+
+  <!--summary-->
+    <h6 class="landmark heading">Summary</h6>
+    <blockquote class="userstuff summary">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut volutpat magna eu rhoncus egestas. Vivamus mi tortor, tincidunt sed elit ac, maximus rhoncus lacus. In at augue eget nisl feugiat mattis sed eget lectus. Nullam egestas vel nibh et finibus. Quisque id magna gravida lorem sodales lacinia. Morbi eu justo mattis, tristique sem porta, facilisis magna. Etiam ut justo neque. Sed vitae dolor non felis molestie congue. Sed sodales felis finibus libero hendrerit, quis molestie augue vulputate.</p>
+    </blockquote>
+
+
+  <!--stats-->
+
+  <dl class="stats">
+      <dt class="language">Language:</dt>
+      <dd class="language">English</dd>
+    <dt class="words">Words:</dt>
+    <dd class="words">3,198</dd>
+    <dt class="chapters">Chapters:</dt>
+    <dd class="chapters">1/1</dd>
+
+
+
+
+    <dt class="hits">Hits:</dt>
+    <dd class="hits">0</dd>
+
+  </dl>
+
+<ul id="ao3rdrXXXXXX" class="ao3rdr-toolbar-outer">
+<div class="ao3rdr-toolbar-segment left-toolbar">
+<img src="images/star-5.svg" alt="rate work 5" class="ao3rdr-button star" value="5">
+<img src="images/star-3.svg" alt="rate work 3" class="ao3rdr-button star" value="3">
+<img src="images/star-1.svg" alt="rate work 1" class="ao3rdr-button star" value="1">
+<img src="images/star--1.svg" alt="rate work -1" class="ao3rdr-button star" value="-1">
+<img src="" class="ao3rdr-button" style="display:none" value="-2">
+</div>
+</ul>
+
+
+<ul id="ao3rdrXXXXXXblacklisted" style="display:none"><img src="images/hidden.svg" alt="hidden by blacklister" class="ao3rdr-button" value="0"><li>hidden for <b>emotions</b></li></ul>
+
+</li>
+
+<script type="text/javascript">
+
+function hide(parent){
+    $(parent).siblings().css('visibility', 'hidden');
+}
+
+function show(parent){
+    $(parent).siblings().css('visibility', 'visible');
+}
+
+$( document ).ready(function() {
+  // Ao3rdr button
+  $(".ao3rdr-button").live('click', function() {
+    // clear all images
+    $(".ao3rdr-button.star").each(function(){
+      this.src = this.src.replace("-fill","");
+    });
+    
+    // then fill this
+    if ($(this).hasClass('star'))
+      this.src = this.src.replace(".svg","-fill.svg");
+
+    // Maybe hide or show
+    if ($(this).attr('value') >= 0){
+      show($('.ao3rdr-toolbar-outer'));
+    } else {
+      hide($('.ao3rdr-toolbar-outer'));
+    }
+    if ($(this).attr('value') == -2) {
+      $('#ao3rdrXXXXXXblacklisted').css('visibility', 'visible');
+      $('#ao3rdrXXXXXXblacklisted').css('display', 'block');
+      $('.ao3rdr-toolbar-outer').css('display', 'none');
+
+    } else {
+      $('#ao3rdrXXXXXXblacklisted').hide();
+      $('.ao3rdr-toolbar-outer').css('display', 'block');
+
+
+    }
+  });
+
+  var n = 6;
+  var c = 0;
+
+  function anim(){ 
+    $($('.ao3rdr-button')[++c % n]).trigger('click');}
+
+  var itv = setInterval(anim, 3000);
+
+  $($('.ao3rdr-button')[0]).trigger('click');
+
+});
+
+</script>
+
+      <!-- end example work -->
+</div> <!-- end row -->
+
+
+<div class="row">
+  
+
+        <div class="five columns">
           <a href="images/preview1.png">
             <img class="u-max-full-width" src="images/preview1.png">
           </a>
         </div>
-        <div class="four columns">
-          <a href="images/preview3.png">
-            <img class="u-max-full-width" src="images/preview3.png">
+        <div class="seven columns">
+          <a href="images/preview2.png">
+            <img class="u-max-full-width" src="images/preview2.png">
           </a>
         </div>
         <div class="eleven columns" style="margin-top: 5%">
