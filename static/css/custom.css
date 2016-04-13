@@ -1,0 +1,50 @@
+.shrink{
+-webkit-transform:scale(0.8);
+-moz-transform:scale(0.8);
+-ms-transform:scale(0.8);
+transform:scale(0.8);
+}
+
+img.ao3rdr-button {
+    max-width:25px;
+    max-height:25px;
+    width: auto;
+    height: auto;
+}
+
+div.ao3rdr-toolbar-segment{
+    display: inline;
+}
+
+div.ao3rdr-toolbar-segment.right-toolbar{
+    padding-left: 7px;
+
+}
+
+ul.ao3rdr-toolbar-outer{
+    display: inline-block;
+    width: 167px;
+}
+
+body {
+    background-image: url("../images/background.png");
+    background-repeat: repeat;
+}
+
+.row {
+    background: white;
+    border-radius: 5px;
+}
+
+.skeleton.header {
+    background: white;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 5%;
+    text-align: center;
+}
+
+.header.module{
+    width: 95%;
+}
+
