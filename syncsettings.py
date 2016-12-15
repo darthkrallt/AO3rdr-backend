@@ -9,6 +9,7 @@ from userlib.reciever import validate_collection, validate_work
 
 import traceback
 import sys
+import re
 
 
 log = logging.getLogger(__name__)
@@ -77,6 +78,11 @@ def get_collection(user_id):
     return jsonify({'collection': collection}), 200
 
 
+# TODO: This is a temporary fix to get the error rate back down
+def work_id_is_valid(work_id):
+    """Work ids are a string of numbers"""
+    return re.match(r'^[0-9]+$', work_id)
+
 
 @app.route('/api/v1.0/user/<string:user_id>/collection', methods=['POST'])
 def merge_collection(user_id):
@@ -98,6 +104,9 @@ def merge_collection(user_id):
         for k, v in res.whole.iteritems():
             v['work_id'] = k
             v['user_id'] = user_id
+            if not work_id_is_valid(k):
+                print('Invalid work_id %s' % k)
+                continue
             to_db.append(v)
 
         # If all is well, save to DB
