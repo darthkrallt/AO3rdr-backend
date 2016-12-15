@@ -47,6 +47,11 @@ def redirect_to_index():
     return send_from_directory('static', 'index.html')
 
 
+@app.route('/api/v1.0/status', methods=['GET'])
+def heartbeat():
+    return jsonify({'status': 'online'}), 200
+
+
 @app.route('/api/v1.0/user/<string:user_id>', methods=['GET'])
 def user_exists(user_id):
     gen = generator.Generator()
