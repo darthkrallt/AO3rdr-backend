@@ -41,14 +41,14 @@ work_schema = {
         "chapters": {"$ref": "#/definitions/chapters"},
         "created": {"type": "number"},
         "title": {"type": "string"},
-        "hasupdate": {"type": "boolean"},
+        "hasupdate": {},  # Not a boolean, 0 or 1
         "updated": {"type": "string"},  # unix timestamp
         "crawled": {"type": "string"},  # TZ
         "visit": {"type": "string"},  # TZ
         "author": {"type": "string"},
         "ao3id": {"type": "string"},  # Technically an int, stored as string
         "rating": {"type": "number"},
-        "deleted": {},  # Not a boolean
+        "deleted": {},  # Not a boolean, 0 or 1
         "fandom": {"type": "string"}
     },
     "required": ["chapters", "title", "ao3id"],
