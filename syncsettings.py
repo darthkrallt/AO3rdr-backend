@@ -52,6 +52,15 @@ def heartbeat():
     return jsonify({'status': 'online'}), 200
 
 
+@app.route('/api/v1.0/hellobar', methods=['GET'])
+def hellobar():
+    contents = {
+        'created_at': 1530159829,
+        'expires_at': 1530403200,
+        'text': 'This is the first hello bar.',
+    }
+    return jsonify(contents)
+
 @app.route('/api/v1.0/user/<string:user_id>', methods=['GET'])
 def user_exists(user_id):
     gen = generator.Generator()
