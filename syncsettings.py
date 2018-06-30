@@ -55,9 +55,17 @@ def heartbeat():
 @app.route('/api/v1.0/hellobar', methods=['GET'])
 def hellobar():
     contents = {
-        'created_at': 1530159829,
+        'created_at': 1530385028,
         'expires_at': 1530403200,
-        'text': 'This is the first hello bar.',
+        'text': """
+        <p>
+            AO3rdr version 1.7.0 ~news~ 2018-07-01
+        </p>
+        <p>
+After so many helpful bug reports and feature requests from you dear readers, AO3rdr is going to get a long-overdue update.
+For this upcoming project the lovely Bee is joining me to do the design. We'd be grateful to get your feedback as well.
+Please follow along at <a href="https://ao3rdr.tumblr.com/">the new official Tumblr</a> if interested!
+        </p>""",
     }
     return jsonify(contents)
 
