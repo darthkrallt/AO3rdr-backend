@@ -49,7 +49,9 @@ work_schema = {
         "ao3id": {"type": "string"},  # Technically an int, stored as string
         "rating": {"type": "number"},
         "deleted": {},  # Not a boolean, 0 or 1
-        "fandom": {}  # A list of strings
+        "fandom": {},  # A list of strings
+        "word_count": {"type": "number"},
+        "summary": {"type": "string"},
     },
     "required": ["chapters", "title", "ao3id"],
 }
