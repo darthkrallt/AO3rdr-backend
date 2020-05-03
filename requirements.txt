@@ -10,3 +10,4 @@ itsdangerous==0.24
 jsonschema==2.4.0
 wsgiref==0.1.2
 gevent
+python==2.7.17
