@@ -3,7 +3,7 @@ from flask import Flask, jsonify, abort, request, send_from_directory, g
 from .userlib import generator
 from .merger import bulkmerge as bulkmerge
 from .merger import unitmerge as unitmerge
-from .database.dbconn import get_db, ItemNotFound, DBconn
+from .database.dbconn import get_db, DBconn, ItemNotFoundError
 from .userlib.reciever import validate_collection, validate_work
 
 import re
@@ -183,7 +183,7 @@ def merge_work(user_id, work_id):
 
         try:
             db_conn.update_work(user_id, work_id, res.whole)
-        except ItemNotFound:
+        except ItemNotFoundError:
             db_conn.create_work(user_id, work_id, res.whole)
 
         return jsonify({'diff': res.remote}), res.status_code

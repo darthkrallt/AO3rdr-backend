@@ -8,11 +8,14 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 
+class ItemNotFoundError(Exception):
+    pass
+
 
 class DBconn(object):
     def __init__(self):
-        aws_access_key_id = os.environ.get('S3_KEY', None)  # I AM OPS U NO GET MY KEYS
-        aws_secret_access_key = os.environ.get('S3_SECRET', None)  # DIS IS MY JOB
+        aws_access_key_id = os.environ.get('S3_KEY', None)
+        aws_secret_access_key = os.environ.get('S3_SECRET', None)
 
         session = boto3.Session(
             region_name='us-east-1',
@@ -22,7 +25,7 @@ class DBconn(object):
 
         ddb = session.resource('dynamodb')
 
-        self.works_table = ddb.Table('ao3rdr-works2')
+        self.works_table = ddb.Table('ao3rdr-works')
         self.immutable_fields = ['work_id', 'user_id']
 
     def get_user(self, user_id):
@@ -60,6 +63,8 @@ class DBconn(object):
 
     def update_work(self, user_id, work_id, data):
         item = self.get_work(user_id=user_id, work_id=work_id)
+        if not item:
+            raise ItemNotFoundError
         # update the item
         for key, value in data.items():
             if key not in self.immutable_fields:
