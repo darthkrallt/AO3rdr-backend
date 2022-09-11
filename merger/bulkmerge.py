@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
     merger.bulkmerge
         Take in all user data and all matching DB data. Join the two, then
@@ -7,11 +5,14 @@
 """
 import database.standardizer as dbs
 import userlib.standardizer as uls
-from collections import namedtuple
 from database.dbconn import get_db, DBconn
-from standard import StandardObject, MERGER_RESPONSE
+from .standard import StandardObject, MERGER_RESPONSE
 
-import traceback
+import logging
+
+
+log = logging.getLogger(__name__)
+
 
 class Merger(object):
 
@@ -34,13 +35,13 @@ class Merger(object):
         db_in = self.db_conn.get_all_works(user_id)
 
         db_in = {_['work_id']: self.db_std.standardize(_) for _ in db_in}
-        remote_in = {k: self.db_std.standardize(v) for k, v in remote_in.iteritems()}
+        remote_in = {k: self.db_std.standardize(v) for k, v in remote_in.items()}
 
         diff_db = {}
         diff_remote = {}
         new_objects = {}
 
-        for work_id in set(db_in.keys() + remote_in.keys()):
+        for work_id in set(list(db_in.keys()) + list(remote_in.keys())):
             try:
                 dbw = db_in.get(work_id, StandardObject())
                 rmw = remote_in.get(work_id, StandardObject())
@@ -53,11 +54,11 @@ class Merger(object):
                 if diff_db[work_id]:
                     new_objects[work_id] = new_object.format()
             except:
-                print >> sys.stderr, 'bulkmerge: ' + repr(traceback.print_exc())
+                log.error('Error in Merger.merge', exc_info=1)
 
         # NOTE: mozilla doesn't seem to support 204 or 205
         status_code = 200
-        for k, v in diff_remote.iteritems():
+        for k, v in diff_remote.items():
             if v == diff_db[k]:
                 status_code = 201 # Created
                 break

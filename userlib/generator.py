@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-
 """
    Userlib.generator
         Generate new user that does not already exist in the DB.
 """
 
-from flask import _app_ctx_stack
 from database.dbconn import get_db
 import uuid
 

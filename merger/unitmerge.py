@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     merger.unitmerge.py
@@ -6,9 +6,8 @@
 """
 import database.standardizer as dbs
 import userlib.standardizer as uls
-from collections import namedtuple
 from database.dbconn import get_db, DBconn
-from standard import StandardObject, MERGER_RESPONSE
+from .standard import MERGER_RESPONSE
 
 class Merger(object):
 
@@ -26,7 +25,7 @@ class Merger(object):
         db_in = self.db_std.standardize(db_in)
         remote_in = self.ul_std.standardize(remote_in)
         new_object = db_in.merge(remote_in)
-        new_dict = new_object.format()
+        new_dict = new_object.format()  # TODO: is this a bug?
 
         db_diff = db_in.diff(new_object).format()
 

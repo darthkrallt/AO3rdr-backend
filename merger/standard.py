@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     merger.standard
@@ -38,8 +38,8 @@ class StandardObject(object):
 
     def get_ts(self, key):
         ts_key = self.key_to_ts(key)
-        if key in self._data.keys():
-            return self[key]['timestamp']
+        if key in list(self._data.keys()):
+            return self[key]['timestamp']  # TODO: is this a bug? should it be self[key][ts_key] 
         return None
 
     def set_item(self, key, value, timestamp=None):
@@ -56,14 +56,14 @@ class StandardObject(object):
         return len(self._data)
 
     def keys(self):
-        return self._data.keys()
+        return list(self._data.keys())
 
     def key_to_ts(self, key):
         return '{0}{1}'.format(key,  self._ts_str)
 
     def merge(self, remote_in):
         out = StandardObject()
-        for key in set(self.keys() + remote_in.keys()):
+        for key in set(list(self.keys()) + list(remote_in.keys())):
             db_ts = self.get_ts(key)
             ul_ts = remote_in.get_ts(key)
             if db_ts > ul_ts:
@@ -75,7 +75,7 @@ class StandardObject(object):
 
     def diff(self, remote_in):
         out = StandardObject()
-        for key in set(self.keys() + remote_in.keys()):
+        for key in set(list(self.keys()) + list(remote_in.keys())):
             db_ts = self.get_ts(key)
             ul_ts = remote_in.get_ts(key)
             if db_ts > ul_ts:
@@ -105,7 +105,7 @@ class Standardizer(object):
     def standardize(self, db_in):
         timestamps = {}
         data = {}
-        for key, value in db_in.iteritems():
+        for key, value in db_in.items():
             if key not in self.exclude:
                 if key.endswith(TS_STR):
                     timestamps[key] = value

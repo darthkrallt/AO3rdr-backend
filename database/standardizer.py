@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
     merger.standardizer
         Take the data from the database.sender and standardize its format.

@@ -1,16 +1,13 @@
 import os
+import time
 
-import boto
-from boto.dynamodb2.fields import GlobalAllIndex, HashKey, RangeKey
-from boto.dynamodb2.items import Item
+from decimal import Decimal
+
 from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 from boto.dynamodb2.exceptions import ItemNotFound
 
-from decimal import Decimal
-
-from flask import _app_ctx_stack
-import time
+from flask import g
 
 
 class DBconn(object):
@@ -45,7 +42,7 @@ class DBconn(object):
     def update_work(self, user_id, work_id, data):
         item = self.works_table.get_item(user_id=user_id, work_id=work_id)
         # update the item
-        for key, value in data.iteritems():
+        for key, value in data.items():
             if key not in self.immutable_fields:
                 item[key] = value
         item['db_updated'] = time.time()
@@ -85,7 +82,7 @@ class DBconn(object):
 def serialize(item):
     if isinstance(item, dict):
         out = {}
-        for k, v in item.items():
+        for k, v in list(item.items()):
             out[k] = serialize(v)
     elif isinstance(item, set) or isinstance(item, list):
         out = []
@@ -102,10 +99,10 @@ def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
-    top = _app_ctx_stack.top
-    if not hasattr(top, 'db_conn'):
-        top.__setattr__('db_conn', DBconn())
-    return top.db_conn
+    if 'db_conn' not in g:
+        g.db_conn = DBconn()
+
+    return g.db_conn
 
 
 '''
