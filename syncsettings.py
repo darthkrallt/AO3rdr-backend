@@ -1,14 +1,11 @@
-import os
 import logging
-from flask import Flask, json, jsonify, abort, request, send_from_directory, _app_ctx_stack
-from userlib import generator
-import merger.bulkmerge as bulkmerge
-import merger.unitmerge as unitmerge
-from database.dbconn import get_db, ItemNotFound
-from userlib.reciever import validate_collection, validate_work
+from flask import Flask, jsonify, abort, request, send_from_directory, g
+from .userlib import generator
+from .merger import bulkmerge as bulkmerge
+from .merger import unitmerge as unitmerge
+from .database.dbconn import get_db, DBconn, ItemNotFoundError
+from .userlib.reciever import validate_collection, validate_work
 
-import traceback
-import sys
 import re
 
 
@@ -33,9 +30,9 @@ def not_found(error=None):
 @app.teardown_appcontext
 def close_db_connection(exception):
     """Closes the database again at the end of the request."""
-    top = _app_ctx_stack.top
-    if hasattr(top, 'db_conn'):
-        top.db_conn.close()
+    db = g.pop('db_conn', None)
+    if db is not None:
+        db.close()
 
 @app.route('/static/<path:path>')
 def static_page(path):
@@ -55,16 +52,14 @@ def heartbeat():
 @app.route('/api/v1.0/hellobar', methods=['GET'])
 def hellobar():
     contents = {
-        'created_at': 1530385028,
-        'expires_at': 1530403200,
+        'created_at': 1662956168.0,
+        'expires_at': 1665634539.0,
         'text': """
         <p>
-            AO3rdr version 1.7.0 ~news~ 2018-07-01
+            AO3rdr version 2.0 ~news~ 2022-09-11
         </p>
         <p>
-After so many helpful bug reports and feature requests from you dear readers, AO3rdr is going to get a long-overdue update.
-For this upcoming project the lovely Bee is joining me to do the design. We'd be grateful to get your feedback as well.
-Please follow along at <a href="https://ao3rdr.tumblr.com/">the new official Tumblr</a> if interested!
+            Dusting the cobwebs off this extension to restore functionality. The domain was poached, so we are moving to ao3rdr.org, overhauled the backend, and some minor changes to the frontend. Enjoy.
         </p>""",
     }
     return jsonify(contents)
@@ -123,7 +118,7 @@ def merge_collection(user_id):
         res = bm.merge(user_id, incomming_data['article_data'])
 
         to_db = []
-        for k, v in res.whole.iteritems():
+        for k, v in res.whole.items():
             v['work_id'] = k
             v['user_id'] = user_id
             if not work_id_is_valid(k):
@@ -142,8 +137,8 @@ def merge_collection(user_id):
         log.info('%r %r', res.status_code,  res.remote)
 
         return jsonify({'diff': res.remote}), res.status_code
-    except Exception as exc:
-        log.error('%r', traceback.print_exc())  # TODO use exc_info=True instead
+    except Exception:
+        log.error('Error in merge_collection')
         abort(400)  #Bad request
 
 # NOTE: Don't want this implemented in production- test only!
@@ -188,10 +183,10 @@ def merge_work(user_id, work_id):
 
         try:
             db_conn.update_work(user_id, work_id, res.whole)
-        except ItemNotFound:
+        except ItemNotFoundError:
             db_conn.create_work(user_id, work_id, res.whole)
 
         return jsonify({'diff': res.remote}), res.status_code
-    except Exception as exc:
-        log.info('%r', traceback.print_exc())  # TODO use exc_info=True instead
+    except Exception:
+        log.error('Error in merge_work')  # TODO use exc_info=True instead
         abort(400)  #Bad request
