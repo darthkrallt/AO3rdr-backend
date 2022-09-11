@@ -3,9 +3,9 @@
         Take in all user data and all matching DB data. Join the two, then
         return the two deltas.
 """
-import database.standardizer as dbs
-import userlib.standardizer as uls
-from database.dbconn import get_db, DBconn
+from ..database import standardizer as dbs
+from ..userlib import standardizer as uls
+from ..database.dbconn import get_db, DBconn
 from .standard import StandardObject, MERGER_RESPONSE
 
 import logging

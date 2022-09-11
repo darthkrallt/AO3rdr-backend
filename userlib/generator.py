@@ -3,7 +3,7 @@
         Generate new user that does not already exist in the DB.
 """
 
-from database.dbconn import get_db
+from ..database.dbconn import get_db
 import uuid
 
 class Generator(object):

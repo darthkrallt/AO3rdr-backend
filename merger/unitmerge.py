@@ -4,9 +4,9 @@
     merger.unitmerge.py
         Merge a user row and a database row together. Return the delta for each.
 """
-import database.standardizer as dbs
-import userlib.standardizer as uls
-from database.dbconn import get_db, DBconn
+from ..database import standardizer as dbs
+from ..userlib import standardizer as uls
+from ..database.dbconn import get_db, DBconn
 from .standard import MERGER_RESPONSE
 
 class Merger(object):

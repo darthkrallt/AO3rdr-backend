@@ -52,16 +52,14 @@ def heartbeat():
 @app.route('/api/v1.0/hellobar', methods=['GET'])
 def hellobar():
     contents = {
-        'created_at': 1530385028,
-        'expires_at': 1530403200,
+        'created_at': 1662956168.0,
+        'expires_at': 1665634539.0,
         'text': """
         <p>
-            AO3rdr version 1.7.0 ~news~ 2018-07-01
+            AO3rdr version 2.0 ~news~ 2022-09-11
         </p>
         <p>
-After so many helpful bug reports and feature requests from you dear readers, AO3rdr is going to get a long-overdue update.
-For this upcoming project the lovely Bee is joining me to do the design. We'd be grateful to get your feedback as well.
-Please follow along at <a href="https://ao3rdr.tumblr.com/">the new official Tumblr</a> if interested!
+            Dusting the cobwebs off this extension to restore functionality. The domain was poached, so we are moving to ao3rdr.org, overhauled the backend, and some minor changes to the frontend. Enjoy.
         </p>""",
     }
     return jsonify(contents)

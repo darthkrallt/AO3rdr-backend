@@ -4,10 +4,10 @@
     userlib.standardizer
         Take in the user data and return it in a standard format.
 """
-import merger.standard
+from ..merger import standard
 
 
-class Standardizer(merger.standard.Standardizer):
+class Standardizer(standard.Standardizer):
     def __init__(self):
         super(Standardizer, self).__init__()
         pass

@@ -2,78 +2,91 @@ import os
 import time
 
 from decimal import Decimal
+import json
 
 from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 from boto.dynamodb2.exceptions import ItemNotFound
 
-from flask import g
+import boto3
+
+#from flask import g
 
 
 class DBconn(object):
     def __init__(self):
-        aws_access_key_id = os.environ['S3_KEY']  # I AM OPS U NO GET MY KEYS
-        aws_secret_access_key = os.environ['S3_SECRET']  # DIS IS MY JOB
+        aws_access_key_id = os.environ.get('S3_KEY', None)  # I AM OPS U NO GET MY KEYS
+        aws_secret_access_key = os.environ.get('S3_SECRET', None)  # DIS IS MY JOB
 
-        self._conn = DynamoDBConnection(
+        session = boto3.Session(
+            region_name='us-east-1',
             aws_access_key_id=aws_access_key_id, 
-            aws_secret_access_key=aws_secret_access_key)
-        self.works_table = Table('ao3rdr-works', connection=self._conn)
+            aws_secret_access_key=aws_secret_access_key,
+        )
+
+        ddb = session.resource('dynamodb')
+
+        self.works_table = ddb.Table('ao3rdr-works2')
         self.immutable_fields = ['work_id', 'user_id']
 
     def get_user(self, user_id):
-        res = self.works_table.query_2(
-            user_id__eq=user_id, work_id__eq='settings', attributes=['user_id'])
-        out = []
-        for entry in res:
-            out.append(self.serialize(entry)['user_id'])
-        return out
+        res = self.works_table.get_item(
+            Key={'user_id':user_id, 'work_id':'settings'},
+            AttributesToGet=['user_id']
+        )
+        return res.get('Item', {}).get('user_id')
 
     def add_user(self, user_id):
         """ Adding a user adds a special "work" which is used to store a user's
             settings.
         """
-        return self.works_table.put_item(data={
+        item = {
             'user_id': user_id,
             'work_id': 'settings',
-            'created': time.time()
-        })
+            'created': time.time(),
+        }
+        item = json.loads(json.dumps(item), parse_float=Decimal)
 
-    def update_work(self, user_id, work_id, data):
-        item = self.works_table.get_item(user_id=user_id, work_id=work_id)
-        # update the item
-        for key, value in data.items():
-            if key not in self.immutable_fields:
-                item[key] = value
-        item['db_updated'] = time.time()
-        item.partial_save()
+        return self.works_table.put_item(Item=item)
 
     def create_work(self, user_id, work_id, data):
         data['user_id'] = user_id
         data['work_id'] =  work_id
         if 'created' not in data:
             data['created'] = time.time()
-        self.works_table.put_item(data)
+
+        item = json.loads(json.dumps(data), parse_float=Decimal)
+        self.works_table.put_item(Item=item)
+
+    def get_work(self, user_id, work_id):
+        res = self.works_table.get_item(Key={'user_id':user_id, 'work_id':work_id})
+        return self.serialize(res.get('Item', {}))
+
+    def update_work(self, user_id, work_id, data):
+        item = self.get_work(user_id=user_id, work_id=work_id)
+        # update the item
+        for key, value in data.items():
+            if key not in self.immutable_fields:
+                item[key] = value
+        item['db_updated'] = time.time()
+
+        # Using put_item because the UpdateExpression looks too finicky
+        self.works_table.put_item(
+            Item=json.loads(json.dumps(item), parse_float=Decimal)
+        )
+
+    # HERE - resume updating
+
 
     def batch_update(self, data_list):
         with self.works_table.batch_write() as batch:
             for data in data_list:
                 batch.put_item(data=data)
 
-    def get_work(self, user_id, work_id):
-        try:
-            res = self.works_table.get_item(user_id=user_id, work_id=work_id)
-        except ItemNotFound:
-            return {}
-        return self.serialize(res)
-
     def get_all_works(self, user_id):
         res = self.works_table.query_2(user_id__eq=user_id)
         for entry in res:
             yield self.serialize(entry)
-
-    def close(self):
-        self._conn.close()
 
     def serialize(self, item):
         out = serialize(dict(item))
