@@ -4,13 +4,9 @@ import time
 from decimal import Decimal
 import json
 
-from boto.dynamodb2.layer1 import DynamoDBConnection
-from boto.dynamodb2.table import Table
-from boto.dynamodb2.exceptions import ItemNotFound
-
 import boto3
+from boto3.dynamodb.conditions import Key
 
-#from flask import g
 
 
 class DBconn(object):
@@ -75,17 +71,14 @@ class DBconn(object):
             Item=json.loads(json.dumps(item), parse_float=Decimal)
         )
 
-    # HERE - resume updating
-
-
     def batch_update(self, data_list):
-        with self.works_table.batch_write() as batch:
-            for data in data_list:
-                batch.put_item(data=data)
+        with self.works_table.batch_writer(overwrite_by_pkeys=['user_id', 'work_id']) as batch:
+            for item in data_list:
+                batch.put_item(Item=json.loads(json.dumps(item), parse_float=Decimal))
 
     def get_all_works(self, user_id):
-        res = self.works_table.query_2(user_id__eq=user_id)
-        for entry in res:
+        res = self.works_table.query(KeyConditionExpression=Key('user_id').eq(user_id))
+        for entry in res['Items']:
             yield self.serialize(entry)
 
     def serialize(self, item):
@@ -112,6 +105,8 @@ def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
+    from flask import g
+
     if 'db_conn' not in g:
         g.db_conn = DBconn()
 

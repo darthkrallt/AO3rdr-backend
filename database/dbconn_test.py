@@ -9,12 +9,14 @@ from unittest import mock
 
 class TestDBconn(unittest.TestCase):
 
+    maxDiff = None
+
     @classmethod
     @mock_dynamodb
     def ddbSetup(cls):
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = 'ao3rdr-works2'
-        table = dynamodb.create_table(
+        dynamodb.create_table(
             TableName=table_name,
             KeySchema=[
                 {'AttributeName': 'user_id','KeyType': 'HASH'}, # Partition
@@ -109,7 +111,7 @@ class TestDBconn(unittest.TestCase):
 
     @mock_dynamodb
     @mock.patch('time.time', mock.MagicMock(return_value=1662866828.6330128))
-    def test_create_work(self):
+    def test_update_work(self):
         self.ddbSetup()
         user_id = 'testuser'
         work_id = '2778923'
@@ -163,6 +165,49 @@ class TestDBconn(unittest.TestCase):
         }
         res = conn.get_work(user_id, work_id)
         self.assertEqual(res, updated_work)
+
+    @mock_dynamodb
+    @mock.patch('time.time', mock.MagicMock(return_value=1662866828.6330128))
+    def test_batch(self):
+        self.ddbSetup()
+        user_id = 'testuser'
+
+        test_work1 = {
+          "user_id": user_id,
+          "work_id": '2778923',
+          "chapters": {
+              "complete": 1.0,
+              "published": 1.0,
+              "total": 1.0,
+          },
+          "chapters__ts": 1467868047.7049999237060546875,
+        }
+
+        test_work1_update_data = {"user_id": user_id, "work_id": '2778923', "rating": 3.0, "rating__ts": 1662866828.6330128}
+
+        test_work2_brand_new = {
+            "user_id": user_id,
+            "work_id": '1234',
+            "chapters": {
+                "complete": 0.0,
+                "published": 1.0,
+                "total": "?",
+            },
+            "chapters__ts": 1467868047.7049999237060546875,
+        }
+
+        conn = DBconn()
+        conn.create_work(user_id, test_work1['work_id'], test_work1)
+
+
+        test_work1.update(test_work1_update_data)
+        conn.batch_update([test_work1, test_work2_brand_new])
+
+        res = [_ for _ in conn.get_all_works(user_id)]
+        res.sort(key=lambda x: x['work_id'])
+
+        self.assertEqual([test_work2_brand_new, test_work1], res)
+
 
 
 if __name__ == '__main__':
