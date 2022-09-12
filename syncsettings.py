@@ -1,18 +1,19 @@
-import logging
 from flask import Flask, jsonify, abort, request, send_from_directory, g
-from .userlib import generator
+import logging
+import re
+
+from .database.dbconn import get_db, DBconn, ItemNotFoundError
 from .merger import bulkmerge as bulkmerge
 from .merger import unitmerge as unitmerge
-from .database.dbconn import get_db, DBconn, ItemNotFoundError
+from .userlib import generator
 from .userlib.reciever import validate_collection, validate_work
 
-import re
 
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)  # TODO consider file based config
 
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__, static_url_path='', instance_relative_config=True)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
 
 
