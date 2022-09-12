@@ -2,11 +2,11 @@ from flask import Flask, jsonify, abort, request, send_from_directory, g
 import logging
 import re
 
-from .database.dbconn import get_db, DBconn, ItemNotFoundError
-from .merger import bulkmerge as bulkmerge
-from .merger import unitmerge as unitmerge
-from .userlib import generator
-from .userlib.reciever import validate_collection, validate_work
+from app.database.dbconn import get_db, DBconn, ItemNotFoundError
+from app.merger import bulkmerge as bulkmerge
+from app.merger import unitmerge as unitmerge
+from app.userlib import generator
+from app.userlib.reciever import validate_collection, validate_work
 
 
 
