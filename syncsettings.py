@@ -17,6 +17,13 @@ app = Flask(__name__, static_url_path='', instance_relative_config=True)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max upload of 5MB
 
 
+@app.before_request
+def before_request():
+    if not request.is_secure:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
+
 @app.errorhandler(404)
 def not_found(error=None):
     message = {
