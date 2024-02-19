@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, request, send_from_directory, g
+from flask import Flask, jsonify, abort, request, redirect, send_from_directory, g
 import logging
 import re
 
